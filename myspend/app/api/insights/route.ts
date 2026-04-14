@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
@@ -96,13 +96,30 @@ export async function POST(req: NextRequest) {
     })),
   });
 
-  const systemPrompt = `You are a helpful personal finance assistant. You have access to the user's spending data. Answer concisely and helpfully. Use dollar amounts where relevant. Be direct.\n\nData:\n${context}\n\nQuestion: `;
+  const systemPrompt = `You are a sharp, practical personal finance advisor with access to the user's real transaction data. Be direct, specific, and helpful — not generic.
+
+Rules:
+- Always reference actual numbers from their data (specific dollar amounts, merchant names, dates)
+- Keep responses concise: 2–5 sentences for simple questions, short bullet points for breakdowns
+- If asked for advice, give concrete actionable steps, not vague platitudes
+- Use dollar signs and format amounts clearly (e.g. $42.50)
+- If the data doesn't cover what they're asking, say so briefly
+- Never make up transactions or numbers not in the data
+- For trend questions, compare periods if the data spans multiple months
+- For "where am I spending most" type questions, cite the top categories/merchants by name
+
+Spending data (last ${recentTxs.length} transactions, ${minDate?.toISOString().slice(0, 10)} to ${maxDate?.toISOString().slice(0, 10)}):
+${context}
+
+User question: ${question}`;
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(systemPrompt + question);
-    const answer = result.response.text();
+    const ai = new GoogleGenAI({ apiKey });
+    const result = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [{ role: "user", parts: [{ text: systemPrompt }] }],
+    });
+    const answer = result.text ?? "";
     return NextResponse.json({ success: true, answer });
   } catch (err) {
     console.error("Gemini insights error:", err);

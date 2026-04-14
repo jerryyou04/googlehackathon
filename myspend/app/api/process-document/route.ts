@@ -1,25 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { prisma } from "@/lib/prisma";
 import { downloadFromGCS } from "@/lib/gcs";
 import { CATEGORIES } from "@/lib/categories";
 
 const VALID_CATEGORIES = new Set(CATEGORIES);
 
-const PROMPT = `You are a financial data extraction assistant.
-Analyze this bank statement or financial document and extract ALL transactions.
-Return ONLY a valid JSON array of transaction objects with NO markdown fences.
+const PROMPT = `You are a financial data extraction expert. Analyze this document and extract ALL transactions.
 
-Each transaction must have:
-- date: string in YYYY-MM-DD format
-- merchant: string (the store/payee name, cleaned up)
-- amount: number (negative for expenses/debits, positive for income/credits)
-- category: one of: Dining, Groceries, Transport, Shopping, Entertainment, Fitness, Bills, Income, Other
+The document may be any of:
+- Bank statement (checking or savings account)
+- Credit card statement
+- Store or restaurant receipt
+- Grocery or retail receipt
+- CSV/spreadsheet export of transactions
+- Screenshot of a transaction list or banking app
+
+Extraction rules:
+- Extract EVERY transaction, charge, payment, or line item visible
+- For receipts: each line item is a transaction; use the store name as merchant for all items
+- For bank/credit card statements: extract every debit, credit, purchase, and payment
+- Amounts: negative numbers for expenses/debits/purchases, positive for income/credits/refunds/payments
+- Dates: use YYYY-MM-DD format; if no year visible, infer from context (statement period, receipt header, etc.)
+- Merchant: clean up the name (e.g. "TIM HORTONS #1234 TORONTO ON" → "Tim Hortons")
+- Category must be exactly one of: Dining, Groceries, Transport, Shopping, Entertainment, Fitness, Bills, Income, Other
+
+Category guidance:
+- Dining: restaurants, cafes, fast food, bars, food delivery (Uber Eats, DoorDash, Skip)
+- Groceries: supermarkets, grocery stores (Loblaws, Walmart Grocery, Costco, Metro, No Frills, FreshCo)
+- Transport: gas stations, parking, transit, Uber/Lyft rides, car rental, tolls, airlines
+- Shopping: retail stores, Amazon, clothing, electronics, home goods, online shopping
+- Entertainment: movies, concerts, streaming (Netflix, Spotify), gaming, sports events
+- Fitness: gyms, sports stores, yoga studios, wellness apps
+- Bills: utilities, phone, internet, insurance, rent, mortgage, subscriptions (not streaming)
+- Income: salary, payroll, e-transfer received, tax refund, interest earned, cashback
+- Other: anything that doesn't clearly fit above
+
+Return ONLY a valid JSON array. No markdown fences, no explanation, no extra text.
+
+Each object must have exactly these fields:
+{
+  "date": "YYYY-MM-DD",
+  "merchant": "Cleaned Merchant Name",
+  "amount": -12.50,
+  "category": "Dining"
+}
 
 Example output:
-[{"date":"2024-01-15","merchant":"Tim Hortons","amount":-4.50,"category":"Dining"},{"date":"2024-01-14","merchant":"Payroll","amount":2500.00,"category":"Income"}]
-
-Return ONLY the JSON array, nothing else.`;
+[{"date":"2024-03-15","merchant":"Tim Hortons","amount":-4.50,"category":"Dining"},{"date":"2024-03-14","merchant":"TTC","amount":-3.30,"category":"Transport"},{"date":"2024-03-13","merchant":"Payroll","amount":2500.00,"category":"Income"}]`;
 
 const IMAGE_MIME_TYPES = new Set([
   "image/jpeg",
@@ -64,7 +92,6 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // Download from GCS
   let buffer: Buffer;
   try {
     buffer = await downloadFromGCS(doc.storagePath);
@@ -89,22 +116,24 @@ export async function POST(req: NextRequest) {
     IMAGE_MIME_TYPES.has(doc.mimeType ?? "") || IMAGE_EXTENSIONS.has(ext);
   const mimeType = doc.mimeType || (isImage ? "image/jpeg" : "application/pdf");
 
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const ai = new GoogleGenAI({ apiKey });
 
   let responseText: string;
   try {
     const base64Data = buffer.toString("base64");
-    const result = await model.generateContent([
-      {
-        inlineData: {
-          mimeType,
-          data: base64Data,
+    const result = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { inlineData: { mimeType, data: base64Data } },
+            { text: PROMPT },
+          ],
         },
-      },
-      { text: PROMPT },
-    ]);
-    responseText = result.response.text();
+      ],
+    });
+    responseText = result.text ?? "";
   } catch (err: unknown) {
     console.error("Gemini error:", err);
     const msg =
@@ -114,7 +143,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: msg }, { status: 504 });
   }
 
-  // Strip markdown fences if present
   const cleaned = responseText
     .replace(/^```(?:json)?\s*/i, "")
     .replace(/\s*```$/, "")
@@ -130,7 +158,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Accept { transactions: [...] } or bare array
   const rawList = Array.isArray(parsed)
     ? parsed
     : Array.isArray((parsed as Record<string, unknown>).transactions)
@@ -156,7 +183,8 @@ export async function POST(req: NextRequest) {
     const dateObj = new Date(t.date);
     if (isNaN(dateObj.getTime())) return [];
     const category =
-      typeof t.category === "string" && VALID_CATEGORIES.has(t.category as (typeof CATEGORIES)[number])
+      typeof t.category === "string" &&
+      VALID_CATEGORIES.has(t.category as (typeof CATEGORIES)[number])
         ? t.category
         : "Other";
     return [
