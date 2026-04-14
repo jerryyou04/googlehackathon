@@ -15,7 +15,7 @@ export function getStorage(): Storage {
   return _storage;
 }
 
-export const GCS_BUCKET = process.env.GCS_BUCKET_NAME ?? "myspend-documents";
+export const GCS_BUCKET = process.env.GCS_BUCKET_NAME ?? "myspendbucket";
 
 export async function uploadToGCS(
   storagePath: string,
