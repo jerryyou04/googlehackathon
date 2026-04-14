@@ -30,6 +30,7 @@ model Transaction {
   amount      Float
   category    String?
   confidence  Float?
+  flagged     Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   document    Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)

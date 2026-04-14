@@ -56,6 +56,7 @@ export default async function HistoryPage({
     date: tx.date?.toISOString() ?? null,
     documentId: tx.documentId,
     document: tx.document,
+    flagged: tx.flagged,
   }));
 
   return (

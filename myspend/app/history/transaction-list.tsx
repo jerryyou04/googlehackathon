@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useState } from "react";
-import { Pencil, Trash2, Check, X, Plus } from "lucide-react";
+import { Pencil, Trash2, Check, X, Plus, AlertTriangle } from "lucide-react";
 import { CATEGORIES, CATEGORY_COLORS, formatAmount, formatDate } from "@/lib/categories";
 
 export interface SerializedTransaction {
@@ -15,6 +15,7 @@ export interface SerializedTransaction {
   date: string | null;
   documentId: string | null;
   document: { fileName: string } | null;
+  flagged: boolean;
 }
 
 interface EditForm {
@@ -259,8 +260,12 @@ export default function TransactionList({
           return (
             <div
               key={tx.id}
-              className={`bg-white border border-[#E2E8E4] rounded-2xl px-4 py-3 flex items-center gap-3 transition-opacity ${
+              className={`bg-white rounded-2xl px-4 py-3 flex items-center gap-3 transition-opacity ${
                 isDeleting ? "opacity-40 pointer-events-none" : ""
+              } ${
+                tx.flagged
+                  ? "border-2 border-amber-400 bg-amber-50/40"
+                  : "border border-[#E2E8E4]"
               }`}
             >
               {/* Avatar */}
@@ -273,7 +278,18 @@ export default function TransactionList({
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-[#1a3a2a] text-sm truncate">{displayName}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-[#1a3a2a] text-sm truncate">{displayName}</p>
+                  {tx.flagged && (
+                    <button
+                      onClick={() => router.push(`/fraud/${tx.id}`)}
+                      className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-300 hover:bg-amber-200 transition-colors shrink-0"
+                    >
+                      <AlertTriangle size={10} />
+                      Possible Fraud
+                    </button>
+                  )}
+                </div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span
                     className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full text-white"

@@ -108,6 +108,7 @@ Formatting rules — follow these exactly:
 - Always format amounts with a dollar sign and commas (e.g. $1,234.56 not 1234.56).
 - If the question is about a specific category or time period, filter your answer to that scope.
 - Never invent numbers or transactions not in the data.
+- If the question is about subscriptions, recurring charges, or repeating payments: look at the recentTransactions list for the same merchant appearing multiple times with the same amount. Call them out by name (e.g. "You have a Spotify subscription at $13.99/month"). Do not generalize — name every one you find.
 
 Spending data covers ${recentTxs.length} transactions from ${minDate?.toISOString().slice(0, 10)} to ${maxDate?.toISOString().slice(0, 10)}:
 ${context}
