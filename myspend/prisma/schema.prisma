@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Document {
+  id               String        @id @default(cuid())
+  fileName         String
+  storageBucket    String
+  storagePath      String
+  mimeType         String?
+  uploadStatus     String        @default("uploaded")
+  extractionStatus String        @default("pending")
+  rawAiResponse    Json?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  transactions     Transaction[]
+}
+
+model Transaction {
+  id          String    @id @default(cuid())
+  documentId  String?
+  date        DateTime?
+  description String
+  merchant    String?
+  amount      Float
+  category    String?
+  confidence  Float?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  document    Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+}
