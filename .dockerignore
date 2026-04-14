@@ -1,0 +1,13 @@
+.git
+.gitignore
+myspend/.env
+myspend/.env.local
+myspend/.env*.local
+myspend/node_modules
+myspend/.next
+myspend/out
+myspend/dist
+myspend/dbseed
+*.md
+Dockerfile
+.dockerignore

@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:push": "prisma db push",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:seed": "npx tsx dbseed/seed.ts"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.19.0",
@@ -20,6 +21,7 @@
     "@types/pg": "^8.20.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
     "geist": "^1.7.0",
     "lucide-react": "^1.8.0",
     "next": "16.2.3",
