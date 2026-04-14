@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
-import { getStorage, GCS_BUCKET } from "@/lib/gcs";
+import { createClient } from "@supabase/supabase-js";
+import { GCS_BUCKET, uploadToGCS } from "@/lib/gcs";
 
 export async function GET() {
-  const storage = getStorage();
-  const bucket = storage.bucket(GCS_BUCKET);
+  const supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
-  // Upload a small test file
   const testFileName = `test-${Date.now()}.txt`;
-  const testContent = Buffer.from(`gcs test at ${new Date().toISOString()}`);
+  const testContent = Buffer.from(`storage test at ${new Date().toISOString()}`);
+
   try {
-    await bucket.file(testFileName).save(testContent, {
-      contentType: "text/plain",
-      resumable: false,
-    });
+    await uploadToGCS(testFileName, testContent, "text/plain");
   } catch (err) {
     return NextResponse.json(
       { success: false, stage: "upload", error: String(err) },
@@ -20,14 +20,13 @@ export async function GET() {
     );
   }
 
-  // List files in bucket
-  let files: string[] = [];
-  try {
-    const [fileList] = await bucket.getFiles({ maxResults: 20 });
-    files = fileList.map((f) => f.name);
-  } catch (err) {
+  const { data: files, error: listError } = await supabase.storage
+    .from(GCS_BUCKET)
+    .list("", { limit: 20 });
+
+  if (listError) {
     return NextResponse.json(
-      { success: false, stage: "list", error: String(err) },
+      { success: false, stage: "list", error: String(listError) },
       { status: 502 }
     );
   }
@@ -36,6 +35,6 @@ export async function GET() {
     success: true,
     bucket: GCS_BUCKET,
     uploaded: testFileName,
-    files,
+    files: files?.map((f) => f.name) ?? [],
   });
 }

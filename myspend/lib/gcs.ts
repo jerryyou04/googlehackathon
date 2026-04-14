@@ -1,39 +1,36 @@
-import { Storage } from "@google-cloud/storage";
+import { createClient } from "@supabase/supabase-js";
 
-let _storage: Storage | null = null;
+export const GCS_BUCKET = process.env.GCS_BUCKET_NAME ?? "documents";
 
-export function getStorage(): Storage {
-  if (_storage) return _storage;
-
-  const credsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
-  if (credsJson) {
-    _storage = new Storage({ credentials: JSON.parse(credsJson) });
-  } else {
-    // Application Default Credentials (Cloud Run / local gcloud auth)
-    _storage = new Storage();
-  }
-  return _storage;
+function getSupabase() {
+  return createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 }
-
-export const GCS_BUCKET = process.env.GCS_BUCKET_NAME ?? "myspendbucket";
 
 export async function uploadToGCS(
   storagePath: string,
   buffer: Buffer,
   mimeType: string
 ): Promise<void> {
-  const bucket = getStorage().bucket(GCS_BUCKET);
-  const file = bucket.file(storagePath);
-  await file.save(buffer, { contentType: mimeType, resumable: false });
+  const { error } = await getSupabase()
+    .storage.from(GCS_BUCKET)
+    .upload(storagePath, buffer, { contentType: mimeType, upsert: true });
+  if (error) throw error;
 }
 
 export async function downloadFromGCS(storagePath: string): Promise<Buffer> {
-  const bucket = getStorage().bucket(GCS_BUCKET);
-  const [contents] = await bucket.file(storagePath).download();
-  return contents as Buffer;
+  const { data, error } = await getSupabase()
+    .storage.from(GCS_BUCKET)
+    .download(storagePath);
+  if (error || !data) throw error ?? new Error("No data returned");
+  return Buffer.from(await data.arrayBuffer());
 }
 
 export async function deleteFromGCS(storagePath: string): Promise<void> {
-  const bucket = getStorage().bucket(GCS_BUCKET);
-  await bucket.file(storagePath).delete({ ignoreNotFound: true });
+  const { error } = await getSupabase()
+    .storage.from(GCS_BUCKET)
+    .remove([storagePath]);
+  if (error) throw error;
 }
