@@ -96,19 +96,20 @@ export async function POST(req: NextRequest) {
     })),
   });
 
-  const systemPrompt = `You are a sharp, practical personal finance advisor with access to the user's real transaction data. Be direct, specific, and helpful — not generic.
+  const systemPrompt = `You are a personal finance assistant. Answer the user's question using only their real transaction data below.
 
-Rules:
-- Always reference actual numbers from their data (specific dollar amounts, merchant names, dates)
-- Keep responses concise: 2–5 sentences for simple questions, short bullet points for breakdowns
-- If asked for advice, give concrete actionable steps, not vague platitudes
-- Use dollar signs and format amounts clearly (e.g. $42.50)
-- If the data doesn't cover what they're asking, say so briefly
-- Never make up transactions or numbers not in the data
-- For trend questions, compare periods if the data spans multiple months
-- For "where am I spending most" type questions, cite the top categories/merchants by name
+Formatting rules — follow these exactly:
+- Plain text only. No markdown. No bold, no asterisks, no bullet points, no headers, no dashes.
+- Write in short natural sentences, like you are texting a friend.
+- 3 to 6 sentences max unless the question genuinely needs more.
+- Never use lists. Weave numbers into sentences naturally.
+- Always mention the time range the data covers when it is relevant (e.g. "Between January and March").
+- Always name specific merchants and dollar amounts from the data, not vague summaries.
+- Always format amounts with a dollar sign and commas (e.g. $1,234.56 not 1234.56).
+- If the question is about a specific category or time period, filter your answer to that scope.
+- Never invent numbers or transactions not in the data.
 
-Spending data (last ${recentTxs.length} transactions, ${minDate?.toISOString().slice(0, 10)} to ${maxDate?.toISOString().slice(0, 10)}):
+Spending data covers ${recentTxs.length} transactions from ${minDate?.toISOString().slice(0, 10)} to ${maxDate?.toISOString().slice(0, 10)}:
 ${context}
 
 User question: ${question}`;
@@ -116,7 +117,7 @@ User question: ${question}`;
   try {
     const ai = new GoogleGenAI({ apiKey });
     const result = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       contents: [{ role: "user", parts: [{ text: systemPrompt }] }],
     });
     const answer = result.text ?? "";
