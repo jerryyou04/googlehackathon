@@ -4,7 +4,7 @@ import "./globals.css";
 import Nav from "@/components/nav";
 
 export const metadata: Metadata = {
-  title: "myspend — Personal Finance Tracker",
+  title: "SmartSpend — Personal Finance Tracker",
   description: "AI-powered spending tracker built on Google Cloud",
 };
 

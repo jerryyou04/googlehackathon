@@ -45,6 +45,7 @@ export type TransactionMinAggregateOutputType = {
   amount: number | null
   category: string | null
   confidence: number | null
+  flagged: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +59,7 @@ export type TransactionMaxAggregateOutputType = {
   amount: number | null
   category: string | null
   confidence: number | null
+  flagged: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -71,6 +73,7 @@ export type TransactionCountAggregateOutputType = {
   amount: number
   category: number
   confidence: number
+  flagged: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +99,7 @@ export type TransactionMinAggregateInputType = {
   amount?: true
   category?: true
   confidence?: true
+  flagged?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -109,6 +113,7 @@ export type TransactionMaxAggregateInputType = {
   amount?: true
   category?: true
   confidence?: true
+  flagged?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -122,6 +127,7 @@ export type TransactionCountAggregateInputType = {
   amount?: true
   category?: true
   confidence?: true
+  flagged?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -222,6 +228,7 @@ export type TransactionGroupByOutputType = {
   amount: number
   category: string | null
   confidence: number | null
+  flagged: boolean
   createdAt: Date
   updatedAt: Date
   _count: TransactionCountAggregateOutputType | null
@@ -258,6 +265,7 @@ export type TransactionWhereInput = {
   amount?: Prisma.FloatFilter<"Transaction"> | number
   category?: Prisma.StringNullableFilter<"Transaction"> | string | null
   confidence?: Prisma.FloatNullableFilter<"Transaction"> | number | null
+  flagged?: Prisma.BoolFilter<"Transaction"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   document?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
@@ -272,6 +280,7 @@ export type TransactionOrderByWithRelationInput = {
   amount?: Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
   confidence?: Prisma.SortOrderInput | Prisma.SortOrder
+  flagged?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   document?: Prisma.DocumentOrderByWithRelationInput
@@ -289,6 +298,7 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   amount?: Prisma.FloatFilter<"Transaction"> | number
   category?: Prisma.StringNullableFilter<"Transaction"> | string | null
   confidence?: Prisma.FloatNullableFilter<"Transaction"> | number | null
+  flagged?: Prisma.BoolFilter<"Transaction"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   document?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
@@ -303,6 +313,7 @@ export type TransactionOrderByWithAggregationInput = {
   amount?: Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
   confidence?: Prisma.SortOrderInput | Prisma.SortOrder
+  flagged?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TransactionCountOrderByAggregateInput
@@ -324,6 +335,7 @@ export type TransactionScalarWhereWithAggregatesInput = {
   amount?: Prisma.FloatWithAggregatesFilter<"Transaction"> | number
   category?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   confidence?: Prisma.FloatNullableWithAggregatesFilter<"Transaction"> | number | null
+  flagged?: Prisma.BoolWithAggregatesFilter<"Transaction"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
 }
@@ -336,6 +348,7 @@ export type TransactionCreateInput = {
   amount: number
   category?: string | null
   confidence?: number | null
+  flagged?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   document?: Prisma.DocumentCreateNestedOneWithoutTransactionsInput
@@ -350,6 +363,7 @@ export type TransactionUncheckedCreateInput = {
   amount: number
   category?: string | null
   confidence?: number | null
+  flagged?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -362,6 +376,7 @@ export type TransactionUpdateInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flagged?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   document?: Prisma.DocumentUpdateOneWithoutTransactionsNestedInput
@@ -376,6 +391,7 @@ export type TransactionUncheckedUpdateInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flagged?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -389,6 +405,7 @@ export type TransactionCreateManyInput = {
   amount: number
   category?: string | null
   confidence?: number | null
+  flagged?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -401,6 +418,7 @@ export type TransactionUpdateManyMutationInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flagged?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -414,6 +432,7 @@ export type TransactionUncheckedUpdateManyInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flagged?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -437,6 +456,7 @@ export type TransactionCountOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   category?: Prisma.SortOrder
   confidence?: Prisma.SortOrder
+  flagged?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -455,6 +475,7 @@ export type TransactionMaxOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   category?: Prisma.SortOrder
   confidence?: Prisma.SortOrder
+  flagged?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -468,6 +489,7 @@ export type TransactionMinOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   category?: Prisma.SortOrder
   confidence?: Prisma.SortOrder
+  flagged?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -539,6 +561,10 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
 export type TransactionCreateWithoutDocumentInput = {
   id?: string
   date?: Date | string | null
@@ -547,6 +573,7 @@ export type TransactionCreateWithoutDocumentInput = {
   amount: number
   category?: string | null
   confidence?: number | null
+  flagged?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -559,6 +586,7 @@ export type TransactionUncheckedCreateWithoutDocumentInput = {
   amount: number
   category?: string | null
   confidence?: number | null
+  flagged?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -601,6 +629,7 @@ export type TransactionScalarWhereInput = {
   amount?: Prisma.FloatFilter<"Transaction"> | number
   category?: Prisma.StringNullableFilter<"Transaction"> | string | null
   confidence?: Prisma.FloatNullableFilter<"Transaction"> | number | null
+  flagged?: Prisma.BoolFilter<"Transaction"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
 }
@@ -613,6 +642,7 @@ export type TransactionCreateManyDocumentInput = {
   amount: number
   category?: string | null
   confidence?: number | null
+  flagged?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -625,6 +655,7 @@ export type TransactionUpdateWithoutDocumentInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flagged?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -637,6 +668,7 @@ export type TransactionUncheckedUpdateWithoutDocumentInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flagged?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -649,6 +681,7 @@ export type TransactionUncheckedUpdateManyWithoutDocumentInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  flagged?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -664,6 +697,7 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   amount?: boolean
   category?: boolean
   confidence?: boolean
+  flagged?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   document?: boolean | Prisma.Transaction$documentArgs<ExtArgs>
@@ -678,6 +712,7 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   amount?: boolean
   category?: boolean
   confidence?: boolean
+  flagged?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   document?: boolean | Prisma.Transaction$documentArgs<ExtArgs>
@@ -692,6 +727,7 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   amount?: boolean
   category?: boolean
   confidence?: boolean
+  flagged?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   document?: boolean | Prisma.Transaction$documentArgs<ExtArgs>
@@ -706,11 +742,12 @@ export type TransactionSelectScalar = {
   amount?: boolean
   category?: boolean
   confidence?: boolean
+  flagged?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "documentId" | "date" | "description" | "merchant" | "amount" | "category" | "confidence" | "createdAt" | "updatedAt", ExtArgs["result"]["transaction"]>
+export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "documentId" | "date" | "description" | "merchant" | "amount" | "category" | "confidence" | "flagged" | "createdAt" | "updatedAt", ExtArgs["result"]["transaction"]>
 export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   document?: boolean | Prisma.Transaction$documentArgs<ExtArgs>
 }
@@ -735,6 +772,7 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     amount: number
     category: string | null
     confidence: number | null
+    flagged: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["transaction"]>
@@ -1169,6 +1207,7 @@ export interface TransactionFieldRefs {
   readonly amount: Prisma.FieldRef<"Transaction", 'Float'>
   readonly category: Prisma.FieldRef<"Transaction", 'String'>
   readonly confidence: Prisma.FieldRef<"Transaction", 'Float'>
+  readonly flagged: Prisma.FieldRef<"Transaction", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Transaction", 'DateTime'>
 }

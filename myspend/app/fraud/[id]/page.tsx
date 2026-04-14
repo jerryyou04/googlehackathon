@@ -69,7 +69,7 @@ export default async function FraudPage({
           <div>
             <h1 className="text-lg font-bold text-amber-800">Possible Fraudulent Transaction</h1>
             <p className="text-sm text-amber-700 mt-0.5">
-              This transaction has been flagged by TD myspend for review. If you do not recognize this charge, act immediately.
+              This transaction has been flagged by TD SmartSpend for review. If you do not recognize this charge, act immediately.
             </p>
           </div>
         </div>

@@ -9,7 +9,7 @@ const PRESET_QUESTIONS = [
   "How does this month compare to last month?",
   "What's my average daily spend?",
   "Which category costs me the most?",
-  "Do I have any recurring charges?",
+  "What subscriptions am I paying for?",
   "What are my biggest single expenses?",
   "How much do I spend on food?",
 ];

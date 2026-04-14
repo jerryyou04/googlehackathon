@@ -96,6 +96,7 @@ export const TransactionScalarFieldEnum = {
   amount: 'amount',
   category: 'category',
   confidence: 'confidence',
+  flagged: 'flagged',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

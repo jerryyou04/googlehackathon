@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -31,9 +32,10 @@ export default function Nav() {
     <>
       {/* Top bar */}
       <header className="sticky top-0 z-50 h-14 bg-gradient-to-r from-[#004d26] to-[#007A3E] flex items-center px-4 shadow-md">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <Image src="/td.png" alt="TD" width={32} height={32} className="rounded" />
           <span className="text-white font-bold text-xl tracking-tight">
-            myspend
+            SmartSpend
           </span>
           <span className="text-[#86efac] text-xs font-medium bg-white/10 px-2 py-0.5 rounded-full">
             powered by Gemini
